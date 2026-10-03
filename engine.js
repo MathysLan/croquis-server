@@ -108,6 +108,22 @@ function normaliser(s) {
   return cleJetons(jetons(s));
 }
 
+// La clé de la forme COLLÉE d'une réponse : la même normalisation, comme si
+// l'expression était tapée d'un seul tenant (pluriel ôté en fin seulement).
+// Pourquoi une seconde clé : le pluriel s'ôte jeton par jeton, et une forme
+// collée n'a plus de jetons. « sous-marin » → soumarin (le s de « sous » part
+// comme un pluriel), mais « sousmarin » → sousmarin ; « sac à dos » → sacados,
+// mais « sacados » → sacado. Une réponse accepte donc ses DEUX clés
+// (preparerMot) — et rien ne change pour un mot simple : ses deux clés sont
+// la même. Le pluriel jeton par jeton reste (« pommes de terre » =
+// « pomme de terre »).
+//   « sous-marin » → sousmarin ; « sac à dos » → sacado ; « le sac à dos » → sacado
+function cleCollee(s) {
+  const js = jetons(s);
+  const t = js.length > 1 && DETERMINANTS.has(js[0]) ? js.slice(1) : js;
+  return singulier(t.join(''));
+}
+
 // Les lettres seules (sans retrait de déterminant ni de pluriel) : longueur
 // d'un mot du dictionnaire.
 const lettres = (s) => jetons(s).join('');
@@ -151,7 +167,8 @@ function preparerMot(e, i) {
   if (e.niveau != null && !NIVEAUX.includes(e.niveau)) throw new Error(`mot « ${e.mot} » : niveau inconnu « ${e.niveau} »`);
   const alias = Array.isArray(e.alias) ? e.alias.map(String) : [];
   const formes = [e.mot, ...alias];
-  const cles = new Set(formes.map(normaliser).filter(Boolean));
+  // Chaque forme accepte sa clé ET celle de sa forme collée (voir cleCollee).
+  const cles = new Set(formes.flatMap((f) => [normaliser(f), cleCollee(f)]).filter(Boolean));
   return {
     mot: e.mot.normalize('NFC'),
     niveau: e.niveau || null,
@@ -550,7 +567,7 @@ function drawerView(g, playerId, now) {
 }
 
 module.exports = {
-  normaliser, jetons, lettres, distance, shuffle, roundsFor,
+  normaliser, cleCollee, jetons, lettres, distance, shuffle, roundsFor,
   createGame, tick, nextDeadline, choose, guess, leave, view, drawerView, ranking,
   MIN_PLAYERS, MAX_PLAYERS, CHOOSE_MS, DRAW_MS, DRAW_MS_LARGE, LARGE_AFTER, PAUSE_MS, REVEAL_MS,
   CHOICES, NIVEAUX, HINTS, SAISIE_MAX, MOT_MIN, MOT_MAX, PROCHE_MIN, REFUS,

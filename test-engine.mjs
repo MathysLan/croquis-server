@@ -589,6 +589,60 @@ for (const mot of ['chat', 'phare']) {
   t('[26] mot de 3 lettres : l indice en laisse au moins une cachée', (E.view(g).pattern.match(/_/g) || []).length === 2);
 }
 
+// ================================================= expressions (lot 6A)
+// Une expression tapée collée, avec espaces ou avec tirets est LA MÊME
+// réponse. normaliser() ne change pas (le pluriel s'ôte jeton par jeton) ;
+// chaque réponse accepte en plus la clé de sa forme collée (cleCollee).
+{
+  const C = E.cleCollee || (() => null);    // (absente d'un moteur d'avant le lot 6A : contre-épreuve)
+  t('[expr] normaliser() inchangé : sous-marin → soumarin, sac à dos → sacados', N('sous-marin') === 'soumarin' && N('sac à dos') === 'sacados');
+  t('[expr] clé collée : sous-marin = sous marin = sousmarin (casse comprise)',
+    ['sous-marin', 'sous marin', 'sousmarin', 'SOUS-MARIN', 'Sous Marin'].every((x) => C(x) === 'sousmarin'));
+  t('[expr] clé collée : sac à dos = sac a dos = sac-à-dos = sacados',
+    ['sac à dos', 'sac a dos', 'sac-à-dos', 'sacados', 'SAC A DOS'].every((x) => C(x) === 'sacado'));
+  t('[expr] mot simple : ses deux clés sont la même (rien ne change)',
+    ['chat', 'chats', 'châteaux', 'bus', 'os', 'parapluie', 'les chats', 'œuf'].every((x) => C(x) === N(x)));
+  t('[expr] déterminant : retiré aussi de la forme collée, gardé s il est seul',
+    C('le sous-marin') === 'sousmarin' && C('un sac à dos') === 'sacado' && C('les') === 'les');
+}
+{
+  const MOTS6 = [...MOTS, { mot: 'sac à dos', niveau: 'moyen' }];
+  const essai = (mot, texte) => {
+    const g = partie(3, { words: MOTS6 });
+    const now = dessiner(g, mot, T0);
+    return E.guess(g, devineurs(g)[0], g.turnId, texte, now + 10);
+  };
+  const BONS = {
+    'sous-marin': ['sous-marin', 'sous marin', 'sousmarin', 'SOUS-MARIN', 'le sous-marin', 'des sous-marins', 'sousmarins'],
+    'sac à dos': ['sac à dos', 'sac a dos', 'sac-à-dos', 'sacados', 'SAC A DOS', 'un sac à dos', 'les sacs à dos'],
+  };
+  for (const [mot, variantes] of Object.entries(BONS)) {
+    const ratees = variantes.filter((v) => essai(mot, v).correct !== true);
+    t(`[expr] « ${mot} » trouvé par ses ${variantes.length} variantes (${variantes.join(' / ')})`, ratees.length === 0, 'ratées : ' + ratees.join(', '));
+  }
+  // Contre-épreuve : une expression DIFFÉRENTE n'est pas acceptée par accident.
+  const FAUX = {
+    'sous-marin': ['sous', 'marin', 'marins', 'sous-sol', 'sous-main', 'sous marine', 'sousmarine', 'soumarine', 'sous-marin rouge'],
+    'sac à dos': ['sac', 'dos', 'sacs', 'sac à main', 'sacoche', 'dos à sac', 'sac de couchage', 'sac à dos bleu'],
+  };
+  for (const [mot, faux] of Object.entries(FAUX)) {
+    const acceptees = faux.filter((v) => essai(mot, v).correct);
+    t(`[expr] « ${mot} » : aucune expression différente acceptée (${faux.join(' / ')})`, acceptees.length === 0, 'acceptées : ' + acceptees.join(', '));
+  }
+  t('[expr] « sous-marin rouge » : contient la réponse → retenu (fuite), pas trouvé', essai('sous-marin', 'sous-marin rouge').withheld === true);
+  t('[expr] fuite repérée sous la forme collée aussi : « c est un sousmarin ? »', essai('sous-marin', "c'est un sousmarin ?").withheld === true);
+  t('[expr] « presque » sur la forme collée : sousmarim', essai('sous-marin', 'sousmarim').close === true);
+  // Les règles d'avant tiennent.
+  t('[expr] pluriel jeton par jeton gardé : « pommes de terre » trouve « pomme de terre »', essai('pomme de terre', 'pommes de terre').correct === true);
+  t('[expr] limite connue : un pluriel INTERNE tapé collé (« pommesdeterre ») n est pas reconnu', essai('pomme de terre', 'pommesdeterre').correct === false);
+  t('[expr] déterminants : « le / la / les / un / une / des » devant l expression acceptés',
+    ['le sous-marin', 'la sous-marin', 'les sous-marins', 'un sous-marin', 'une sous-marin', 'des sous-marins'].every((v) => essai('sous-marin', v).correct));
+  t('[expr] déterminant seul : refusé', essai('sous-marin', 'le').correct === false);
+  // Une clé collée qui retombe sur la clé d'une autre réponse : refusée à la création.
+  t('[expr] createGame refuse « sousmarin » à côté de « sous-marin » (clé collée en double)',
+    throws(() => partie(2, { words: [...MOTS, { mot: 'sousmarin', niveau: 'moyen' }] }), /double/));
+}
+
 // ============================================================ déterminisme
 {
   const jouer = () => {
