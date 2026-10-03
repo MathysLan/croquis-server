@@ -1,0 +1,10 @@
+# Déploiement Render, même forme que les autres serveurs du portfolio.
+# (Pas encore déployé : lot serveur local seulement.)
+services:
+  - type: web
+    name: croquis-server
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /
