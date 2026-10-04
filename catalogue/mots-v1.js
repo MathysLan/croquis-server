@@ -1,6 +1,5 @@
-// Croquis — CATALOGUE V1 (proposition, lot 6A). PAS ENCORE BRANCHÉ : le
-// serveur joue toujours sur mots.js (la fixture de test). Ce fichier sera
-// relu et validé par Mathys avant de remplacer mots.js.
+// Croquis — CATALOGUE V1, relu et validé par Mathys. C'est le dictionnaire
+// du serveur : mots.js le relaie tel quel (aucune copie ailleurs).
 //
 // Écrit à la main, sans tirage : inspectable et versionnable. Une entrée :
 //   { mot, niveau: 'facile' | 'moyen' | 'difficile', alias?: [...] }

@@ -160,7 +160,7 @@ const lignes = [];
 const L = (s = '') => lignes.push(s);
 L('# Croquis — rapport du catalogue');
 L();
-L(`Fichier : \`${path.relative(RACINE, FICHIER).replace(/\\/g, '/')}\` · généré par \`node tools/valider-catalogue.mjs\`. **Proposition, pas encore branchée** (le serveur joue sur \`mots.js\`).`);
+L(`Fichier : \`${path.relative(RACINE, FICHIER).replace(/\\/g, '/')}\` · généré par \`node tools/valider-catalogue.mjs\`. Catalogue du serveur : \`mots.js\` le relaie tel quel.`);
 L();
 L(`- Entrées : **${entrees.length}** — facile **${compte.facile}**, moyen **${compte.moyen}**, difficile **${compte.difficile}**`);
 L(`- Alias : **${entrees.reduce((s, e) => s + e.alias.length, 0)}** sur ${entrees.filter((e) => e.alias.length).length} entrées`);

@@ -1,10 +1,10 @@
 # Croquis — rapport du catalogue
 
-Fichier : `catalogue/mots-v1.js` · généré par `node tools/valider-catalogue.mjs`. **Proposition, pas encore branchée** (le serveur joue sur `mots.js`).
+Fichier : `catalogue/mots-v1.js` · généré par `node tools/valider-catalogue.mjs`. Catalogue du serveur : `mots.js` le relaie tel quel.
 
 - Entrées : **318** — facile **102**, moyen **107**, difficile **109**
 - Alias : **12** sur 12 entrées
-- Taille du fichier : 5.8 Ko
+- Taille du fichier : 5.7 Ko
 - Erreurs : **0** · avertissements à relire : **19**
 
 ## Couverture (parties simulées par le moteur, 30 graines par taille)

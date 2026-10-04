@@ -107,6 +107,9 @@ const PHOTO = 'data:image/webp;base64,' + require('fs').readFileSync(require('pa
   t(`[16] fil : ${cs.reduce((n, c) => n + c.msgs.length, 0)} messages relus chez 16 robots, champs attendus, aucun instant`, ecarts.length === 0, ecarts.slice(0, 5).join(' | '));
   const f = cs.flatMap((c) => O.fuites(c, tours));
   t(`[16] secret : aucune proposition chez un devineur avant le turn-end (${tours.size} tours)`, f.length === 0, f.slice(0, 5).join(' | '));
+  const proposes = [...tours.values()].flatMap((e) => e.choices);
+  t(`[6] catalogue V1 : ${proposes.length} propositions sur ${tours.size} tours, aucune deux fois dans la partie`,
+    tours.size === 16 && proposes.length === 48 && new Set(proposes).size === 48);
   t('[16] choices : seulement chez le dessinateur du tour', cs.every((c) => c.tous((m) => m.type === 'choices').every((m) => tours.get(m.turnId).drawer === c.id)));
   void E;
 

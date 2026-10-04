@@ -488,7 +488,7 @@ wss.on('connection', (ws) => {
   });
 });
 
-server.listen(PORT, () => console.log(`croquis-server à l'écoute sur :${PORT} — ${MOTS.length} mots (provisoires)`));
+server.listen(PORT, () => console.log(`croquis-server à l'écoute sur :${PORT} — ${MOTS.length} mots (catalogue v1)`));
 
 module.exports = {
   server, wss, rooms,

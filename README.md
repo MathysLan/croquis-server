@@ -21,8 +21,12 @@ que tous les présents ont trouvé (pause 1,5 s), révélation 6 s.
 - `server.js` — l'orchestre : rooms, joueurs, minuterie unique posée sur
   `nextDeadline()`, traduction des événements du moteur en messages, et le
   **dessin** (du transport : validé, gardé pour `snapshot`, relayé).
-- `mots.js` — ⚠️ **provisoire** : les 24 mots de la fixture de test, en
-  attendant le vrai catalogue.
+- `mots.js` — relaie le **catalogue V1** (`catalogue/mots-v1.js`, 318 mots :
+  102 faciles, 107 moyens, 109 difficiles, avec alias), sans le recopier.
+  Validation : `node tools/valider-catalogue.mjs` (écrit
+  `catalogue/RAPPORT.md`) ; tirage sur le vrai catalogue : `node
+  test-catalogue.js`. La fixture de 24 mots (`test-fixtures/mini-dico.js`)
+  ne sert plus qu'aux tests du moteur.
 - `avatar.js`, `presence.js` — copiés tels quels des autres serveurs.
 
 ## Lancer en local
